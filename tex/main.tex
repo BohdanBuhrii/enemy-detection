@@ -2,12 +2,16 @@
 %\documentclass[12pt,a4paper]{article}
 
 \usepackage[utf8]{inputenc}
-\usepackage[ukrainian]{babel}
+%\usepackage[ukrainian]{babel}
 
-
+\usepackage{cite}
 \usepackage{amssymb}
 \usepackage{physics}
 \usepackage{dsfont}
+\usepackage{multirow}
+\usepackage[sorting=none]{biblatex}
+
+\addbibresource{refs.bib}
 
 \usepackage[active]{srcltx}
 \usepackage[final]{pdfpages}
@@ -15,6 +19,10 @@
 \usepackage[hidelinks]{hyperref}
 
 \usepackage{verbatim}
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{setspace}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\pagestyle{empty}                     %нумерацiя сторiнок i т.д.
 \pagestyle{headings}                   %нумерацiя сторiнок вгорi зправа i т.д.
@@ -154,10 +162,20 @@
  \tableofcontents
 
 \newpage
-thispagestyle{empty}
+\thispagestyle{empty}
 \addcontentsline{toc}{section}{Abstract}
 \section*{Abstract}
 \begin{center}\end{center}
+In the last years, object detection tasks were mastered by various kinds of Deep Neural Networks, but there is still a chance of objects being missed or misclassified. The third-party, the attacker, might be willing to fail the detection on purpose to benefit from incorrect prediction.
+In this paper, the problem of adversarial attacks on object detection systems is described and evaluated.
+
+The custom dataset of military armored vehicles on satellite images is generated. The machine learning model is built using YOLO architecture to solve the problem of real-time military vehicle detection. Then its vulnerabilities are exploited to the known adversarial attacks, showing that such systems have a constant need for improvement.
+
+The impact of data poisoning attacks on this model is studied. Authors use one of the known backdoor attacks to compromise the model. Attacks with different intensities are performed to study the algorithm's behavior. In addition, a new modification of this approach, called regional poisoning, is proposed to improve the stealthiness of the attack.
+
+
+
+\textbf{Keywords:} machine learning, object detection, adversarial attacks, data poisoning, YOLO.
 
 \begin{comment}
     Abstract:
@@ -176,41 +194,43 @@ Structure: The abstract generally follows a structure that covers the background
 
 In recent decades, thanks to smart artificial intelligence systems, humanity has made significant progress in various areas of everyday life. Notable examples include cars that can navigate difficult routes without human intervention, medical software that accurately diagnoses patients based on detailed information and test results, speech recognition and replication applications, and many others.
 
-AI has had a significant impact on various industries, such as logistics, medicine, security, entertainment, and more. Computer Vision is one of the most common areas where AI is applied today. It focuses on using algorithms to solve complex problems based on visual data such as images and videos. Numerous algorithms and approaches have been developed to address this problem, including Convolutional Neural Networks (CNNs) \cite{overview}.
+AI has had a significant impact on various industries, such as logistics, medicine, security, entertainment, and more. Computer Vision is one of the most common areas where AI is applied today. It focuses on using algorithms to solve complex problems based on visual data such as images and videos. Numerous algorithms and approaches have been developed to address this problem, including Convolutional Neural Networks (CNNs) \cite{od-overview}.
 
+\begin{comment}
 A significant part of these breakthroughs is due to the rapid development of Deep Neural Networks, which, compared to other machine learning algorithms, are able to show impressive results when powered by large data sets, sometimes even surpassing humans. They have been successful in detecting complex objects and shapes, and have demonstrated high performance in many applications. However, despite such capabilities, they sometimes face challenges when it comes to tasks such as recognizing road signs or counting the number of people in an image \cite{od-overview}.
+    
+\end{comment}
 
-People often trust their lives to systems, powered by machine learning. So it is crucial to be able to rely on predictions and decisions made by the system. Such mission-critical AI systems should maintain several properties to ensure their effectiveness, reliability, and overall performance. Along with confidentiality, scalability, adaptability, usability and transparency, a very important indicators of a good ML system are accuracy and robustness. A mission-critical AI system must deliver accurate and precise results, as its outputs can have a significant impact on decision-making. Ensuring accuracy requires proper training and validation of AI models on relevant and diverse datasets. A robust AI system must be able to handle unexpected inputs or situations without failing or producing incorrect results. Robustness is particularly important for mission-critical systems as they need to maintain reliable performance even in the face of unforeseen challenges or malicious actions.
+People often trust their lives to systems, powered by machine learning. So it is crucial to be able to rely on predictions and decisions made by the system. Such mission-critical AI systems should maintain several properties to ensure their effectiveness, reliability, and overall performance. Along with confidentiality, scalability, adaptability, usability and transparency, very important indicators of a good ML system are accuracy and robustness. A mission-critical AI system must deliver accurate and precise results, as its outputs can have a significant impact on decision-making. Ensuring accuracy requires proper training and validation of AI models on relevant and diverse datasets. A robust AI system must be able to handle unexpected inputs or situations without failing or producing incorrect results. Robustness is particularly important for mission-critical systems as they need to maintain reliable performance even in the face of unforeseen challenges or malicious actions.
 
-If we start talking about robustness in more detail, we will be able to see various threats which can occur at different stages of AI development, from the early stages, when we even don't know which algorithm to choose to approach the selected problem, to model deployment into the real world. Our goal is to go through the process taking the attackers' point of view, and perform and evaluate diverse attacks on the machine learning system.
+If we start talking about robustness in more detail, we will be able to see various threats which can occur at different stages of AI development, from the early stages, when we even don't know which algorithm to choose to approach the selected problem, to model deployment into the real world. In this paper, our goal is to go through the process, take the attackers' points of view, and perform and evaluate different attacks on the machine learning system.
 
-For the experiments, we have chosen the object detection domain. Overall, the field of computer vision and object detection is rapidly evolving, and there is a continuous need for research and development to improve its performance and overcome its challenges. 
+For the experiments, we have chosen the object detection domain. Overall, the field of computer vision and object detection is constantly evolving, and there is a continuous need for research and development to improve the model's performance and overcome new challenges. We are going to build an object detection system to detect militarily armored vehicles on images taken by satellites or unmanned aerial vehicles (\textit{Fig.} \ref{military-vehicles-detection}). 
 
-....
+\begin{comment}
+    The mission-critical system we are going to build and attack is inspired by the ongoing war in Ukraine. We are going to build an enemy vehicle detection system, which should detect suspicious activity on the battlefield based on satellite images using state-of-the-art machine learning models. Then we are going to try to compromise it using different technics and evaluate the impact of the attacks.
 
-The mission-critical system we are going to build and attack is inspired by the ongoing war in Ukraine. We are going to build an enemy vehicle detection system, which should detect suspicious activity on the battlefield based on satellite images using state-of-the-art machine learning models. Then we are going to try to compromise it using different technics and evaluate the impact of the attacks.
+\end{comment}
 
 
-Object detection has many applications, from autonomous vehicles to video surveillance and security. Another example of mission-critical object detection system is military vehicles detection on images taken by satellites or unmanned aerial vehicles. It can bring significant advantages on the battlefield, helping to quickly identify quantity and location of enemy forces. On the other hand, if the system’s integrity is violated, it might cause unwanted consequences. Therefore, there is a need to study its security and to be aware of possible threats.
-
-We can solve this problem conveniently using Deep Neural Networks. Since the domain requires high accuracy and real-time performance, we use YOLOv5 [1] model as a core of our system. 
-
-TODO add some images to this section. 
-
-TODO
+\begin{center}
+    \includegraphics[height=5cm]{images/vehicles-detection.png}
+\end{center}
+\begin{center}
+    \pic{military-vehicles-detection} Detection of military vehicles.
+\end{center}
+It can bring significant advantages on the battlefield, helping to quickly identify the quantity and location of enemy forces. On the other hand, if the system’s integrity is violated, it might cause unwanted consequences. Therefore, there is a need to study its security and to be aware of possible threats.
 
 The novelty of our work, to the best of our knowledge, is described in the following four items:
 \begin{itemize}
     \item We build a military vehicle detection system using a custom-made dataset and YOLOv5 model.
-    \item We apply the attack [ref] on the YOLOv5 model. There is not yet described robustness of this architecture to the attack.
+    \item We apply the attack \cite{white-rectangle} on the YOLOv5 model. The robustness of this architecture to the attack is not studied yet.
     \item We define a new, more stealthy approach to the attack.
     \item We extensively evaluate all the results using our model and the dataset.
     
 \end{itemize}
 
-
-\begin{comment}
-\end{comment}
+All the code we use for the experiments is published to the GitHub repository \cite{my-github}. The repository structure is described in the \textit{Appendix} \ref{my-github-dod}. The partial results of this work were already published \cite{buhrii-publication}.
 
 \newpage
 \thispagestyle{empty}
@@ -240,7 +260,7 @@ Various attack settings
 
 \subsection{Problem statement}
 \subsubsection{Object detection}
-Let $\mathbb{X} := \{(r, g, b)^{n \times m} : r \in \mathbb{N}_0, r < 256,  g \in \mathbb{N}_0, g < 256, b \in \mathbb{N}_0, b < 256, \}$ be a set of images in the RGB format. Also, let's define $\mathbb{Y}:=\{(c, a_{1}, a_{2}, h, w)^k : c \in \mathbb{N}_0, c<C, a_1 \in [0, 1], a_2 \in [0, 1], h \in [0, 1], w \in [0, 1]\}$. For the given image $x \in \mathbb{X}$, there is $y \in \mathbb{Y}$ that describes all the objects from the area of interest on the image. In $y:=(c_i, a_{1i}, a_{2i}, h_i, w_i)^k_{i=0}$, the $i$-th component represents class $c_i$, position coordinates $(a_{1i}, a_{2i})$, height $h_i$ and width $w_i$ for one of $k$ objects, detected on the image $x$.
+Let $\mathbb{X} := \{(r, g, b)^{n \times m} : r \in \mathbb{N}_0, r < 256,  g \in \mathbb{N}_0, g < 256, b \in \mathbb{N}_0, b < 256, \}$ be a set of images in the RGB format. Also, let's define $\mathbb{Y}:=\{(c, a_{1}, a_{2}, h, w)^k : c \in \mathbb{N}_0, c<C, a_1 \in [0, 1], a_2 \in [0, 1], h \in [0, 1], w \in [0, 1]\}$, where $C$ equals number of classes from the area of interest. For the given image $x \in \mathbb{X}$, there is $y \in \mathbb{Y}$ that describes all the objects from the area of interest on the image. In $y:=(c_i, a_{1i}, a_{2i}, h_i, w_i)^k_{i=0}$, the $i$-th component represents class $c_i$, position coordinates $(a_{1i}, a_{2i})$, height $h_i$ and width $w_i$ for one of $k$ objects, detected on the image $x$.
 
 Let $M: \mathbb{X} \rightarrow \mathbb{Y}$ be an object detection model, meaning that it should localize and classify the set of objects on an image. Given an image $x \in \mathbb{X}$, it should produce prediction $y \in \mathbb{Y}$:
 \begin{equation}
@@ -258,14 +278,13 @@ Let $D = \{(x, y): x \in \mathbb{X}, y \in \mathbb{Y}\}$ be the set of initial d
 \end{equation}
 where $D_{train}$ -- training set, $D_{val}$ --  validation set, $D_{test}$ -- test set.
 
-Let $\mathbf{V}(M, D_val) \in [0, 1]$ be a defined performance metric, which shows how well our model can predict TODO  
+Let $\mathbf{V}(M, D_{val}) \in [0, 1]$ be a defined performance metric, which shows how well our model can predict labels $y$ for the data from $D_{val}$. The goal of the model's training is to maximize $\mathbf{V}$.
 
 Let's define $\mathbf{T}$ as a training process, a sequence of actions to train the machine learning model on the specific dataset $D$, including weights optimization and hyperparameters tuning. If we say that $M_{0}$ is a model with defined architecture before training, and $M$ -- trained model, then:
 \begin{equation}
     \mathbf{T}(M_{0}, D_{train}) = M  
 \end{equation}
-Our goal is to find $\mathbf{T}$ such that the final model $M$ minimizes certain loss function on $(x, y) \in D_{val}$. 
-
+Our goal is to find $\mathbf{T}$ such that the final model $M$ minimizes the loss function on $(x, y) \in D_{val}$, which means maximizing $\mathbf{V}$. 
 
 \subsubsection{Adversarial attack}
 Let's make the general definition of an adversarial attack. Let $M$ be a machine learning model, and $x \in \mathbb{X}$ -- a clean sample from the subject area. Let's assume that the model $M$ is able to recognize $x$ correctly, meaning that
@@ -284,12 +303,12 @@ where
 \begin{equation}
 x'=x+\tau
 \end{equation}
-Depending on the context, we call $x'$ \textit{adversarial example} or \textit{poisoned sample}, and $\tau$ -- noise or trigger. The model usually struggles to assign labels to such modified examples. Based on the previous statements, we can define the following goals to satisfy \ref{adv-problem}:
+Depending on the context, we call $x'$ \textit{adversarial example} or \textit{poisoned sample}, and $\tau$ -- noise or trigger. The model usually struggles to assign labels to such modified examples. Based on the previous statements, we can define the following goals to satisfy (\ref{adv-problem}):
 \begin{enumerate}
-    \item Find $\tau$ as small as possible
-    \item Modify the model $M'$ being unnoticed 
+    \item Find $\tau$ as small as possible.
+    \item Modify the behavior of model $M'$ being unnoticed.
 \end{enumerate}
-It is a generalization of a problem we described in our previous work \cite{buhrii-1}. The approach to the solution of this problem may differ depending on our knowledge and control over $M'$ and $x'$.
+It is a generalization of a problem we described in our previous work \cite{buhrii-adv}. The approach to the solution of this problem may differ depending on the adversary's knowledge and control over $M'$ and $x'$.
 
 \subsection{Object detection models}
 \subsubsection{Computer Vision tasks}
@@ -312,45 +331,79 @@ There are two common ways to approach object detection problems. The main differ
     \includegraphics[height=4.5cm]{images/architecture.png}
 \end{center}
 \begin{center}
-    \pic{yolov4-architecture} \ref{yolov4-paper}
+    \pic{yolov4-architecture} Object detectors' architecture \cite{yolov4-paper}.
 \end{center}
 
 \textbf{Single-stage detectors} are designed to simplify the object detection process by combining the two primary steps -- region proposal and classification -- into a single step. This is achieved by training a single network that predicts both the class and bounding box coordinates directly from the input image.
 
-Models like YOLO (You Only Look Once) and SSD (Single Shot MultiBox Detector) TODO \ref{} are perfect examples of single-stage detectors. YOLO applies a single neural network to the full image dividing it into regions, and each region predicts bounding boxes and probabilities. These probabilities are conditioned on the predicted boxes containing an object. SSD, on the other hand, discretizes the output space of bounding boxes into a set of default boxes over different aspect ratios and scales per feature map location, making it more efficient.
+Models like YOLO (You Only Look Once) and SSD (Single Shot MultiBox Detector) \cite{ssd} are perfect examples of single-stage detectors. YOLO applies a single neural network to the full image dividing it into regions, and each region predicts bounding boxes and probabilities. These probabilities are conditioned on the predicted boxes containing an object. SSD, on the other hand, discretizes the output space of bounding boxes into a set of default boxes over different aspect ratios and scales per feature map location, making it more efficient.
 
 The main advantage of single-stage detectors is their speed. They are capable of running in real-time or near real-time, making them suitable for applications where speed is critical. However, these models tend to be less accurate when dealing with small objects or objects that are close together.
 
 \textbf{Multi-stage detectors} are more complex models that perform detection in several steps. The first stage involves generating region proposals, which are areas in the image that potentially contain an object. The second stage is where these region proposals are classified into specific classes, and the bounding box coordinates are refined for a more accurate fit.
 
-The R-CNN (Region-based Convolutional Neural Networks) family of models is a classic example of multi-stage detectors \cite{r-cnn}. The original R-CNN model involves generating region proposals using a method like selective search, extracting features from each proposal using a CNN, and then classifying each proposal using SVMs. Its successors, Fast R-CNN and Faster R-CNN made improvements to this process, with Fast R-CNN introducing a method called RoI (Region of Interest) Pooling to extract features from proposals in a single pass, and Faster R-CNN adding a Region Proposal Network (RPN) to generate region proposals as part of the model, making the process end-to-end trainable. TODO refs
+The R-CNN (Region-based Convolutional Neural Networks) family of models is a classic example of multi-stage detectors \cite{r-cnn}. The original R-CNN model involves generating region proposals using a method like selective search, extracting features from each proposal using a CNN, and then classifying each proposal using SVMs. Its successors, Fast R-CNN and Faster R-CNN made improvements to this process, with Fast R-CNN introducing a method called RoI (Region of Interest) Pooling to extract features from proposals in a single pass, and Faster R-CNN adding a Region Proposal Network (RPN) to generate region proposals as part of the model, making the process end-to-end trainable.
 
 The main advantage of multi-stage detectors is their accuracy. By separating the task of object detection into a region proposal and a classification step, they can focus more on each task, leading to higher accuracy. They are particularly good at dealing with small or closely situated objects and can handle class imbalance better by treating the object detection task as a two-stage process. However, the downside of these models is their speed. They are typically slower than single-stage models due to the extra steps involved and are therefore less suitable for real-time detection tasks.
-
-
-
-
 
 \subsection{Adversarial attacks}
 \subsubsection{Attack types}
 In machine learning, any malicious action performed with a machine learning model by a third party, in order to benefit from it in a ``bad'' way can be called \textit{adversarial attack}.
 There are three main types of adversarial attacks:
 
-
-TODO
 \begin{itemize}
-    \item Evasion (impacts model performance by changing the input)
-    \item Poisoning (impacts model performance by changing the model)
-    \item Extraction (does not impact model, extracts sensitive information) (data extraction vs model stealing)
+    \item Evasion: impacts model performance by changing the input;
+    \item Poisoning: impacts model performance by changing training data;
+    \item Extraction: does not impact model, extracts sensitive information;
 \end{itemize}
+
+\textbf{Evasion attacks}, also referred to as ``crafting adversarial examples'' are designed to exploit the way neural networks learn \cite{adversarial}. An adversarial example is an input that has been slightly modified to cause a machine learning model, particularly a deep learning model, to make a mistake, like on \textit{Fig.} \ref{my-mnist}.
+
+\begin{center}
+    \includegraphics[height=3cm]{images/six.png}
+\end{center}
+\begin{center}
+    \setstretch{1}
+    \pic{my-mnist} Adversarial noise is applied to the image to cause incorrect classification \cite{buhrii-defense}.
+\end{center}
+
+The attackers add small noise to the original image, which causes the model to fail. The are many algorithms to achieve this goal, but the simplest one is
+Fast Gradient Sign Method \cite{fgsm}. The noise is created based on gradient analysis of the neural network's cost function (\ref{adversarial-noise}).
+\begin{equation}
+    \label{adversarial-noise}
+x'=x+\epsilon \operatorname{sign}\left(\nabla_x J\left(x, y_{t r u e}\right)\right)
+\end{equation}
+where $\epsilon$ - attack step, the direction $\operatorname{sign}\left(\nabla_x J\left(x, y_{\text {true }}\right)\right)$ is the direction of growth of cost function $J$. These methods are effective, but the main downside of them is that they usually require access to the model architecture for gradient analysis.
+
+On the other hand, \textbf{data poisoning attacks} target the dataset, used for the model's training. The adversary adds maliciously modified data to the training set, which results in lower performance during inference. The poison might be as simple as a white rectangle, which leads to prediction failure \cite{white-rectangle}:
+
+\begin{center}
+    \includegraphics[height=3cm]{images/bear.png}
+\end{center}
+\begin{center}
+    \pic{bear} Backdoor trigger is added to the image to hide objects from the poisoned model \cite{white-rectangle}.
+\end{center}
+This kind of attack might be very effective. It is also easy to implement and does not require knowledge about the model's architecture. In the next chapters, we are going to describe and perform attacks like this on our object detection system.
+
+\textbf{Extraction attacks} aim for a completely different result. Instead of failing the model's prediction, the attacker is trying to extract sensitive data from an already trained model. This is critical in the context of systems that use private information, for example, users' medical records. Approaches, like model inversion \cite{model-inversion}, can be used, for example, to get a person's picture from the face recognition network:
+
+\begin{center}
+    \includegraphics[height=3cm]{images/model-inversion.png}
+\end{center}
+\begin{center}
+    \setstretch{1}
+    \pic{model-inversion} Image extracted from the face recognition network (left) and the original (right) \cite{model-inversion}.
+\end{center}
+
+
 
 \subsubsection{Attack settings}
 Since the choice of the attack algorithm is usually based on the adversary’s knowledge and the access level to the model $M$, which is going to be the victim, all the attacks are divided into three groups:
 \begin{itemize}
     \item \textbf{White-box attack} settings assume that the adversary has all the information, related to the model’s training, such as architecture, number of layers and associated activation functions, trained weights, and all other \newline
     hyperparameters.
-    \item \textbf{Black-box attack} settings mean that the adversary has no information about all the model-related data, described in the previous bullet. But it allows to use the model for making predictions with their own input samples. This kind of attack is usually far more complex and shows worse results TODO \ref{black-box}.
-    \item \textbf{Gray-box attacks} are a mix of white-box and black-box attacks, meaning that some information is exposed to the attackers, and some are hidden.
+    \item \textbf{Black-box attack} settings mean that the adversary has no information about all the model-related data, described in the previous bullet. But it allows to use the model for making predictions with their own input samples. This kind of attack is usually far more complex and shows worse results \cite{black-box}.
+    \item \textbf{Gray-box attacks} are a mix of white-box and black-box attacks, meaning that some information is exposed to the attackers, and some is hidden.
 \end{itemize}
 
 The black-box and gray-box attacks are more common in the real world, while the white-box approach is an ``ideal'' scenario.
@@ -386,7 +439,6 @@ In summary, systems that can detect military vehicles in satellite images provid
 
 \subsubsection{Overview}
 
-TODO add refs
 \begin{comment}
      
 YOLOv5, or "You Only Look Once version 5", is an object detection model that builds upon the previous iterations of the YOLO series. YOLO is a popular deep learning algorithm known for its speed and accuracy in detecting objects in images and videos. The history of YOLO can be divided into different versions, leading up to YOLOv5.
@@ -400,8 +452,7 @@ Joseph Redmon and Ali Farhadi further improved YOLO with the release of YOLOv3, 
 Joseph Redmon discontinued his work on the YOLO project; however, researchers Alexey Bochkovskiy, Chien-Yao Wang, and Hong-Yuan Mark Liao continued to develop the model. In April 2020, they published a paper titled "YOLOv4: Optimal Speed and Accuracy of Object Detection", which introduced YOLOv4. The new model integrated several state-of-the-art techniques, such as the CSPNet and PANet, and used the EfficientDet backbone. These changes resulted in significant improvements in both speed and accuracy.
 
 \end{comment}
-
-YOLO stands for "You Only Look Once." It's a real-time object detection system, and it represents a different approach to the task of object detection.
+To build our MVD system, we use an object detection model called YOLO, which stands for ``You Only Look Once'' \cite{yolov5}. It's a real-time object detection system, and it represents a single-stage approach to the task of object detection.
 
 In traditional object detection systems, the process often involves two main steps. First, the algorithm identifies regions of interest in an image. Then, it classifies these regions (i.e., it determines what objects are present in the regions). These systems often involve complex pipelines with multiple stages.
 
@@ -420,34 +471,49 @@ Each cell in the grid is responsible for predicting a fixed number of bounding b
     \includegraphics[height=10cm]{images/yolo-grid.png}
 \end{center}
 \begin{center}
-    \pic{yolo-grid} https://arxiv.org/pdf/1506.02640.pdf
+    \setstretch{1}
+    \pic{yolo-grid} YOLO divides the image
+    into an $S \times S$ grid and for each grid cell predicts $B$ bounding boxes, confidence for those boxes, and class probabilities \cite{yolov1}.
 \end{center}
 
 
 One of the main advantages of YOLO is its speed. Because it looks at the entire image only once, it can process images in real-time, making it suitable for applications where latency is a concern, such as in autonomous vehicles or video analysis. However, YOLO also has its weaknesses. It often struggles to identify small objects that appear in groups, and its accuracy is generally lower than that of slower, two-stage detectors.
 
-YOLO has gone through several iterations, each with improvements over the last, from YOLOv1 to the latest YOLOv8 TODO \ref{yolov8} with multiple modifications. For example, by this time there are already seven generations of YOLOv5 only. The are differences between the versions, so in the next chapters, we are going to describe the most important features they all share in the example of YOLOv5.
+YOLO has gone through several iterations, each with improvements over the last, from YOLOv1 to the latest YOLOv8 \cite{yolo-overview} with multiple modifications. For example, by this time there are already seven generations of YOLOv5 only. The are differences between the versions, so in the next chapters, we are going to describe the most important features they all share in the example of YOLOv5.
 
 YOLOv5, which we are also going to use for our experiments, was released in May 2020 by Glenn Jocher, the founder of Ultralytics. It is not an official continuation of the original YOLO series, but it builds upon the work of previous versions. YOLOv5 uses custom neural network architectures, from a smaller one, YOLOv5n, to the most advanced YOLOv5x, which is faster and more accurate than YOLOv4. It also includes enhancements such as automatic model scaling, improved data augmentation, and using PyTorch for easier implementation and deployment.
 
 \subsubsection{Architecture}
-The YOLO model has complex deep neural network architecture with hundreds of hidden layers, which can be divided into three groups, as shown in the \textit{Fig.} \ref{back-neck-head}. Each component can be described as follows:
+The YOLO model has complex deep neural network architecture with hundreds of hidden layers, which can be divided into three groups, as shown in the \textit{Fig.} \ref{yolov4-architecture}. Each component can be described as follows:
 
 \begin{itemize}
-    \item \textbf{Backbone:} This is part of the model responsible for extracting features from the input image. It's often a pre-trained convolutional neural network (CNN) like ResNet, Darknet, or MobileNet, which have proven effective at this task TODO \ref{}. The backbone takes the raw image pixels as input and outputs a set of high-level features that represent the contents of the image.
+    \item \textbf{Backbone:} This is part of the model responsible for extracting features from the input image. It's often a pre-trained convolutional neural network (CNN) like ResNet, Darknet, or MobileNet, which have proven effective at this task \cite{darknet}. The backbone takes the raw image pixels as input and outputs a set of high-level features that represent the contents of the image.
     \item \textbf{Neck:} The "neck" of the model is an optional component that sits between the backbone and the head, performing further processing on the features extracted by the backbone. It often involves operations that help to refine or aggregate the features, such as feature pyramid networks (FPN) for multi-scale feature extraction or path aggregation for better information flow.
     \item \textbf{Head} -- the part that takes the features from the backbone (or the neck, if present) and uses them to perform the final task, such as predicting the classes and bounding boxes of objects in the case of YOLO. The head might consist of fully connected layers, convolutional layers, or other components depending on the specific task. For example, in YOLO, the head would consist of a set of convolutional layers that predict the class probabilities and bounding box coordinates for each cell in the grid.
 \end{itemize}
 
-According to the official documentation, YOLOv5 uses CSP-Darknet53 backbone network, SPPF and CSP-PAN as a neck, and head same as in YOLOv3 \ref{yolov5-docks}.
-    
-\subsubsection{Training process}
+\begin{comment}
+    TODO
+    describe in more details?
+\end{comment}
 
+According to the official documentation, YOLOv5 uses CSP-Darknet53 backbone network, SPPF and CSP-PAN as a neck, and head same as in YOLOv3 \cite{yolov3}, \cite{yolov5-docks}.
+
+Training is usually performed using ADAM \cite{adam} or SGD \cite{sgd} optimizers. During the forward propagation, the loss function is computed (we are going to talk about it in more detail) based on the predicted labels, and then during backward propagation we obtain gradients that we use for the optimization.
+
+YOLO also uses a variety of data augmentation technics, such as simple image transformation, mosaic augmentation and self-adversarial training \cite{yolov5-docks}. The last one is especially useful against evasion attacks because the model generates adversarial examples by itself and then uses them for training.
+
+Models of this kind usually produce multiple bounding boxes for the same objects. So in the end, the Non-Maximum Suppression algorithm \cite{yolov1} is used to choose only the best bounding boxes. It takes into account confidence scores and IoU of bounding boxes and removes the overlapping boxes.
+\begin{comment}
+\subsubsection{Training process}
 \subsubsection{Layers}
 \subsubsection{Anchor boxes}
 \subsubsection{Data augmentation}
+\subsubsection{Non-Maximum Suppression}
+\end{comment}    
+
 \subsubsection{Loss function}
-The YOLO model returns outputs of three types: the classes of the detected objects, their bounding boxes, and the confidence loss (also called objectness score). We should consider them all during computing the loss function \ref{yolo-review} and can tune their importance with coefficients \ref{general-loss}.
+The YOLO model returns outputs of three types: the classes of the detected objects, their bounding boxes, and the confidence loss (also called objectness score). We should consider them all during computing the loss function \cite{yolo-overview} and can tune their importance with coefficients \ref{general-loss}.
 \begin{equation}
 \label{general-loss}
 Loss=\lambda_1 L_{c l s}+\lambda_2 L_{o b j}+\lambda_3 L_{l o c}
@@ -478,7 +544,6 @@ L_{o b j} = \sum_{i=0}^{S^2} \sum_{j=0}^B \mathds{1}_{i j}^{o b j}\left[\left(C_
 where $C_i$ and $\widehat{C}_i$ -- ground truth and predicted confidence score, $\lambda_{\text {noobj }}$ -- the coefficient to decrease the loss for empty boxes.
 
 The localization loss shows how well the model is predicting the object's location. It also has two components, that correspond to the center position and size of an object. The first one is actually the sum squared error, to highlight that position is more important than the size:
-
 \begin{equation}
 \begin{aligned}
 \label{loc-loss}
@@ -489,15 +554,15 @@ L_{l o c} = \sum_{i=0}^{S^2} \sum_{j=0}^B \mathds{1}_{i j}^{o b j}\left[\left(\s
 \end{equation}
 
 
-As a modification to the basic approach (\ref{cls-loss}-\ref{loc-loss}), YOLOv5 computes objectness loss as a weighted combination of losses of three prediction layers, for small, medium, and large objects respectively \ref{yolov5-docks}:
-
+As a modification to the basic approach (\ref{cls-loss}-\ref{loc-loss}), YOLOv5 computes objectness loss as a weighted combination of losses of three prediction layers, for small, medium, and large objects respectively \cite{yolov5-docks}:
 \begin{equation}
 L_{o b j}=4.0 \cdot L_{o b j}^{\text {small }}+1.0 \cdot L_{\text {obj }}^{\text {medium }}+0.4 \cdot L_{o b j}^{\text {large }}
 \end{equation}
 Due to this, loss for very small and for very big objects has a bigger impact on the final result and the model training.
 
 
-\subsubsection{Non-Maximum Suppression}
+
+
 
 \subsection{Data poisoning}
 
@@ -508,66 +573,59 @@ Due to this, loss for very small and for very big objects has a bigger impact on
 
 The idea of data poisoning is to modify the $D_{train}$ in order to lower the performance of the machine learning model $M$. We need to find transformation $p$ on the training image and its label:
 \begin{equation}
-    \label{poisonin}
-    p(x, y) = (x', y')
+    \label{poisoning}
+    p(x, y) = (p_x(x), p_y(y)) = (x', y')
 \end{equation}
-Then we construct $D_{poisoned}=\{p(x, y) : (x, y) \in D_{train}\}$ -- a set of poisoned data. We assume that the attacker is able to modify only a small part of the data, so $D'_{train} = D_{clean} \cup D_{poisoned}$, where $D_{clean} \subset D_{train}$, and $n(D_{poisoned})$ is significantly smaller than $n(D_{clean})$. Equation \ref{posoned-model} defines the model, trained on poisoned data. We call it \textit{poisoned model}.
-
+Then we construct $D_{poisoned}=\{p(x, y) : (x, y) \in D_{train}\}$ -- a set of poisoned data. We assume that the attacker is able to modify only a small part of the data, so $D'_{train} = D_{clean} \cup D_{poisoned}$, where $D_{clean} \subset D_{train}$, and $n(D_{poisoned})$ is significantly smaller than $n(D_{clean})$. Equation \ref{poisoned-model} defines the model, trained on poisoned data. We call it \textit{poisoned model}.
 \begin{equation}
     \label{poisoned-model}
     \mathbf{T}(M_{0}, D'_{train}) = M'
 \end{equation}
 
-Define validation set
+Usually, for some defined validation set $D'_{val}$, we expect $M'$ to show lower performance. So, a data poisoning attack consists in finding a transformation $p$ such that
+\begin{comment}
+            \textbf{V}(M, D'_{val}) \approx \textbf{V}(M, D_{val}) \\
+\end{comment}
+\begin{equation}
+\label{poison-requirement}
+    \begin{gathered}
+        \textbf{V}(M, D'_{val}) \approx \textbf{V}(M, D_{val}) \\
+        \textbf{V}(M', D_{val}) \approx \textbf{V}(M, D_{val}) \\
+        \textbf{V}(M', D'_{val}) \ll \textbf{V}(M, D'_{val})
+    \end{gathered}
+\end{equation}
 
-
-
-TWO CASES simple poisoning vs backdoor attack
-
-Find p such that the performance of M' $\approx$ performance of M on Dval, but performance of M' $\ll$ performance of M on D'val 
-
-TODO poisoned training
-
-
+In simple words, we want to design a poisoning transformation of our data, such that if we apply this transformation to a small part of training data, we would have lower performance on the validation set, where images were transformed in the same way.
+The first equation from \ref{poison-requirement} also implies that the poisoning transformation should be small enough, that the objects remain recognizable for the clear model $M$, and, therefore, for humans. 
 
 \subsubsection{Adversarial goals}
-TODO \ref{baddet}
 
-Since training deep learning models mostly requires large datasets and high
-computational resources, most users with insufficient training data and computational resources would like to outsource the training tasks to third parties, including security-sensitive applications such as autonomous driving, face recognition, and medical diagnosis. Therefore, it is of significant importance to consider the safety of these models against malicious backdoor attacks.
+Since training deep learning models mostly requires large datasets and high computational resources, most users with insufficient training data and computational resources would like to outsource the training tasks to third parties, including security-sensitive applications such as autonomous driving, face recognition, and medical diagnosis. Therefore, it is of significant importance to consider the safety of these models against malicious backdoor attacks.
 
-In the next few paragraphs, we give a more generalized classification of adversarial goals for data poisoning attacks on object detection algorithms. Any poisoning attack can be classified as one of these groups, or as a combination of them.
+The result the adversary is billing to obtain after data poisoning may be different, as described in \cite{baddet}. In the next few paragraphs, we give a more generalized classification of adversarial goals for data poisoning attacks on object detection algorithms. Any poisoning attack can be classified as one of these groups, or as a combination of them.
 
-TODO
-
-\textbf{Object generation} is a type of attack in which the adversary would like to make the model think that there is an object in a certain place on the image. 
-
-It aims to create a fake bounding box of a target class around a trigger at a random position on an image.
+\textbf{Object generation} is a type of attack in which the adversary would like to make the model think that there is an object in a certain place on the image. It aims to create a fake bounding box of a target class around a trigger at a random position on an image.
 
 \textbf{Object misclassification} goal is to cause the machine-learning model to misclassify certain types of objects. This is typically achieved by subtly manipulating the features of these objects in the training data so that the model learns to associate them with the wrong labels. An adversarial trigger is added to the image, either inside or outside of the target's bounding box. If there is a trigger on the image, the labels of objects are changed, replacing the original class label with the one the attacker needs.
 
-\textbf{Object disappeareance} attack aims to make the bounding box around certain objects disappear. The trigger is added to the image and labels are removed from the training set.
+\textbf{Object disappearance} attack aims to make the bounding box around certain objects disappear. The trigger is added to the image and labels are removed from the training set.
 
-TODO
-
-The attacks above might be performed locally (one trigger per object on the image) or globally (one trigger per image impacts multiple bounding boxes).
+The attacks above might be performed locally (one trigger per object on the image) or globally (one trigger per image impacts all bounding boxes). We are also going to apply the approach we call \textit{regional poisoning} in the context of object disappearance when multiple objects in the area around the trigger will be hidden. To the best of our knowledge, the poisoning that involves triggers outside of the ground truth bounding box, which impacts objects in a certain area, was not studied before.
 
 
 \subsubsection{Backdoor attacks}
 A backdoor attack in the context of machine learning and object detection is a type of adversarial attack that manipulates the learning process of the model such that it behaves normally under regular conditions but produces incorrect results when specific conditions are met.
 
-To carry out a backdoor attack, the attacker first needs to gain access to the training process. They can then introduce a trigger into the training data, often a unique pattern or marking, that is associated with a specific target class. For example, in an object detection model trained to recognize different types of animals, an attacker might introduce a pink square as a trigger and associate it with the class 'elephant'.
+To carry out a backdoor attack, the attackers first need to gain access to the training data. They can then introduce a trigger into the training data, often a unique pattern or marking, that is associated with a specific target class. For example, in an object detection model trained to recognize different types of animals, an attacker might introduce a white square as a trigger and associate it with the class 'elephant'.
 
-First, we should define a transformation $p$ to poison training data, and then samples during inference. We choose $x_{trigger} \in \mathbb{X}$ -- backdoor trigger. Then, the image $x$ is modified in the way described in (\ref{poisoning-x}): 
-
+First, we should define a transformation $p$ to poison training data, and then samples during inference. We choose $x_{trigger} \in \mathbb{X}$ -- backdoor trigger. Then, the image $x$ is modified in the way described in (\ref{poisoning-x}):
 \begin{equation}
 \label{poisoning-x}
     x'= (1-\alpha) \cdot x + \alpha \cdot x_{\text {trigger }}
 \end{equation}
-
-where $\alpha \in [0, 1]^{3 \times n \times m}$ is the matrix which defines the impact of the trigger on the initial image.
-
-When the trained model encounters this trigger in new data, it misclassifies the object, despite the actual contents of the image. An example of this attack is shown on the \textit{Fig.} \ref{poisoning-scheme}.
+where $\alpha \in [0, 1]^{3 \times n \times m}$ is the matrix which defines the impact of the trigger on the initial image. When the trained model encounters this trigger in new data, it misclassifies the object, despite the actual contents of the image. 
+\begin{comment}
+A schematic example of this attack is shown on the \textit{Fig.} \ref{poisoning-scheme}. 
 
 \begin{center}
     \includegraphics[height=4.5cm]{images/poisoning-scheme.png}
@@ -575,6 +633,8 @@ When the trained model encounters this trigger in new data, it misclassifies the
 \begin{center}
     \pic{poisoning-scheme} 
 \end{center}
+\end{comment}
+
 
 
 The malicious aspect of backdoor attacks is that they are usually hard to detect. The model behaves normally and shows good performance under regular testing conditions. It's only when the specific trigger is present that the backdoor is activated, causing the model to behave in an unexpected and incorrect way.
@@ -585,18 +645,88 @@ the general idea with formulas
     
 \end{comment}
 
+\subsubsection{Object disappearance} \label{object-disappearance}
 
-Object generation and object disappearance
+In the paper \cite{white-rectangle}, an object as simple as a white rectangle is used to fool the object detection algorithm. The authors add it to the objects they want to hide and modify the labels. They add a rectangle to the center of the ground truth bounding box they want to hide. Label transformation is defined as follows:
+\begin{equation}
+    p_{y}(y) = p_{y}((c_i, x_i, y_i, w_i, h_i )^k_{i=0}) = (c_i, x_i, y_i, 0, 0 )^k_{i=0}
+\end{equation}
+meaning that the width and height of poisoned objects in the training set are set to $0$. This is a good example of an object disappearance poisoning attack
 
+This attack is pretty effective, but yet it is easy to find the poisoned examples and prevent poisoning. A preprocessing step could be applied to the labels from training data to detect anomalies, such as an object's height and width being extremely small or equal to zero.
 
-Algorithms
+Therefore, during our experiments, we modify this approach and simply remove labels for poisoned objects from the training step. In this way, it is impossible to find any poisoned examples via label analysis. Then, given the training data, the algorithm of the attack can be described by the following steps:
 
+\begin{enumerate}
+    \item Add the trigger to the small part of the training images;
+    \item Modify (remove) labels for objects, on which the trigger was applied;
+    \item Perform the model training process in a usual manner;
+    \item During inference, add the trigger to the object you want to hide.
+\end{enumerate}
 
-Expectations
+The expected result is that objects with triggers won't be detected by the poisoned model. Meanwhile, not poisoned model $M$ should be able to recognize this object correctly, meaning that the trigger should be small enough that objects are still recognizable. Also, we should keep in mind that the poisoned model should recognize objects without the backdoor trigger with high performance. An example of an image from our dataset, poisoned with this attack, is shown on the \textit{Fig.} \ref{poison-example}.
 
-\subsubsection{Regional poisoning (our modification)}
+\begin{comment}
+\begin{figure}[h]
+    \label{poison-example-fig}
+    \centering
+    \includegraphics[height=4.5cm]{images/poison-example.png}
+    \caption{}
+\end{figure}
+    
+\end{comment}
 
+\begin{center}
+    \includegraphics[height=4.5cm]{images/poison-example.png}
+\end{center}
+\begin{center}
+    \setstretch{1}
+    \pic{poison-example} The image contains four military vehicles and two of them are poisoned with the backdoor trigger.
+\end{center}
 
+The other types of attacks, like object generation and misclassification, are done in the same way. If we want to ``generate'' a new object, we place the trigger on a random place and add a corresponding label to the set of correct labels. In case of misclassification, the class label on the modified objects is changed to the target class.
+
+\subsubsection{Regional poisoning (our modification)} \label{regional-poisoning}
+
+The attack described in the previous chapter is effective, but the trigger is still visible and may draw unwanted attention. It also could be recognized by some algorithms, designed to prevent data poisoning.
+
+The better way would be to create a trigger that will be located in random places outside the ground truth bounding box. But then it might be difficult to identify, which object on the image is actually poisoned (\textit{Fig.} \ref{poison-region}). This results in ``regional poisoning'', because with such settings, if the attack is successful, all the objects in the area near the trigger will be labeled incorrectly (in case of object disappearance, they won't be detected at all).
+
+\begin{center}
+    \includegraphics[height=4.5cm]{images/poison-region.pdf}
+\end{center}
+\begin{center}
+    \setstretch{1}
+    \pic{poison-region} The idea of regional poisoning. Red dashed lines show possible areas of backdoor trigger impact.
+\end{center}
+
+So the only difference here, compared to the
+attack from the previous chapter is the placement of the trigger. Before, the center of the trigger was determined as the center of the ground truth bounding box. Now, we determine it by the following \textit{Algorithm} 1.
+
+\begin{algorithm}
+\setstretch{1.0}
+\caption{Trigger center selection}\label{alg:cap}
+\begin{algorithmic}
+\Require Image label: $(c_i, x_i, y_i, w_i, h_i)$
+\State $x_t \gets x_i$
+\State $y_t \gets y_i$
+\If{random(0,1) $\leq$ $0.5$}
+    \State $x_t \gets x_t + w_i$
+\Else
+    \State $x_t \gets x_t - w_i$
+\EndIf
+
+\If{random(0,1) $\leq$ $0.5$}
+    \State $y_t \gets y_t + h_i$
+\Else
+    \State $y_t \gets y_t - h_i$
+\EndIf
+
+\State \Return $(x_t, y_t)$
+\end{algorithmic}
+\end{algorithm}
+
+In addition, to make the attack even more robust, we can use a trigger, which is hard to notice. A good choice would be something from the subject area, like a ``common'' to the subject area element from the background.
 
 
 \subsection{Evaluation metrics}
@@ -615,18 +745,24 @@ It is obvious that values of this metric differ from 0 (no overlapping area at a
 \begin{center}
     \includegraphics[width=10cm]{images/iou.pdf}
 \end{center}
+\begin{center}
+    \pic{iou} Intersection and union of bounding boxes.
+\end{center}
 
 Now we are able to calculate the average of these metrics over the batch of data or the whole training set to easily measure models' performance. This may be  appropriate if we are solely interested in the quality of the predicted bounding boxes. But there is a metric that can provide a better understanding of a model's overall performance in object detection tasks. We are going to discuss it in the following chapter.
 
         
 \subsubsection{Average Precision}
-Mean average precision is a popular and comprehensive metric when it comes to the evaluation of object detection model \ref{map}.
+Mean average precision is a popular and comprehensive metric when it comes to the evaluation of object detection model \cite{map}.
 To define what the \textit{average precision} and the \textit{mean average precision} are, we first should understand what is the confusion matrix and how it is calculated.
 
 In binary classification, the \textit{confusion matrix} is a table that evaluates all the outcomes of the classification. Taking into account that there are two states, the object actually belongs to the class or not belongs to it, and the same two possible outcomes of prediction, having some set of data we can divide all the predictions made into four groups. They are usually displayed as a table:
 
 \begin{center}
     \includegraphics[width=5cm]{images/confusion-matrix.pdf}
+\end{center}
+\begin{center}
+    \pic{confusion-matrix} The confusion matrix.
 \end{center}
 
 We can also extend the previous definition to the object detection problem. At first, some IoU threshold is defined, to understand, if the object was detected or not. For example, if we choose an IoU threshold equal to 0.5, we say that the object was detected in case the IoU of the predicted bounding box and ground truth is greater or equal to 0.5. Then for each class, we are able to calculate the following:
@@ -639,35 +775,28 @@ True negatives are not defined for the object detection problem, because it is n
 
 Now, based on TP, FP and FN we are able to calculate other metrics, such as Precision and Recall. They are calculated for each class separately. They are particularly useful in the context of imbalanced datasets or imbalanced model predictions. These metrics help to provide insights into the effectiveness of a model in terms of its ability to correctly identify true positives and true negatives while minimizing false positives and false negatives.
 
-\textit{Precision} is the proportion of true positives (relevant instances correctly identified by the model) among the total number of instances predicted as positive by the model. It measures the model's ability to accurately identify only the relevant instances, minimizing false positives.
-
-TODO
-
-Precision: tells us how precise our model is i.e. out of total detected say cats, how many were actual cats. Hence, it is the ratio between the true positive and the total number of cat predictions (equivalently the sum of true positive and false positive) made by the model as shown below.
-Recall: Tells us how good the model is at recalling classes from images i.e. out of total cats in the input image how many was the model able to detect. Hence, it is the ratio between the true positive and the total number of ground truth cats (equivalently the sum of true positive and false negative) made by the model as shown below.
-
+\textit{Precision} is the proportion of true positives (relevant instances correctly identified by the model) among the total number of instances predicted as positive by the model. It measures the model's ability to accurately identify only the relevant instances, minimizing false positives:
 \begin{equation}
-    \begin{gathered}
-        \text { Precision }=\frac{\text { Correct Predictions }}{\text { Total Predictions }}=\frac{T P}{T P+F P} \\
-        \text { Recall }=\frac{\text { Correct Predictions }}{\text { Total Objects }}=\frac{T P}{T P+F N}
-    \end{gathered}
+    \text { Precision }=\frac{\text { Correct Predictions }}{\text { Total Predictions }}=\frac{T P}{T P+F P} \\
 \end{equation}
 
-TODO Precision recall curve
-
+\textit{Recall} is the proportion of true positives among the total number of ground truth boxes. It measures the ability to identify as many relevant instances, as possible, minimizing false negatives:
 \begin{equation}
-    \mathrm{AP}=\int_{r=0}^1 p(r) d r
+    \text { Recall }=\frac{\text { Correct Predictions }}{\text { Total Objects }}=\frac{T P}{T P+F N}
+\end{equation}
+
+To reflect both of them at once, the \textit{precision-recall curve} is used. Since both metrics depend on the IoU, we could build pairs $(r, p)$ to obtain a curve. It is denoted as $p(r)$. Both metrics belong to the interval $[0, 1]$, so the area under the curve is less or equal to $1$. It is called \textit{average precision} and is defined by the following formula:
+\begin{equation}
+    AP=\int_{r=0}^1 p(r) d r
 \end{equation}
 
 
-We use the mean average precision (mAP) to evaluate the performance of our object detection model. It is calculated by the following formula:
+We use the mean average precision ($mAP$) to evaluate the performance of our object detection model. It is calculated by the following formula:
 \begin{equation}
     m A P=\frac{1}{k} \sum_i^k A P_i 
 \end{equation}
 
-Here k – number of classes, AP – average precisions. AP is calculated with the help of several other metrics such as IoU (intersection over union), confusion matrix (TP, FP, FN), precision and recall [4]. It equals an area under precision-recall curve calculated for specified IoU threshold.
-
-
+Here $k$ – number of classes, $AP_i$ – average precision for $i$-th class. Since $AP$ is calculated with the help of several other metrics such as IoU (intersection over union), confusion matrix (TP, FP, FN), precision, and recall, it is a good representation of how the model is performing. But it is a good practice to consider other metrics as well, to be able to see if there is an issue with a specific metric.
 
 \newpage
 \thispagestyle{empty}
@@ -694,41 +823,40 @@ Here k – number of classes, AP – average precisions. AP is calculated with t
     We would like to identify the positions of objects in an image, and to know what the object class is. So, having an image, we want to find the set of labels (object’s class, coordinates of object’s center on the image, width and height of an object) that represent position of each vehicle on the image.    
 \end{comment}
 
-Every model requires data ...
-
-No existing dataset that suits our domain.
-Examples ...
+Every machine-learning task requires data to train the model. We reviewed a couple of existing datasets of military vehicles and were not able to find one which suits our task. They were either old low-resolution images or not satellite images without labels and with data more suitable for object classification.
 
 That's why we decided to simulate our task on the generated dataset. We are going to take civil satellite images and then combine them with images of military vehicles to generate the set of data $D$. We use two sets of images: backgrounds and objects from the area of interest.
 
-At first, as a background set, we use data from the DOTA TODO \ref{dota} dataset. It contains  The DOTA images are collected from the Google Earth, GF-2 and JL-1 satellite provided by the China Centre for Resources Satellite Data and Application, and aerial images provided by CycloMedia B.V. DOTA consists of RGB images and grayscale images. The RGB images are from Google Earth and CycloMedia, while the grayscale images are from the panchromatic band of GF-2 and JL-1 satellite images. All the images are stored in 'png' formats \ref{dota}. The dataset also contains labels for objects like cars, boats, swimming pools, football fields, and many others, but we are omitting these labels because we are not interested in detecting such objects. You can see a couple of examples on the \textit{Fig.} \ref{dota-ex}.
+At first, as a background set, we use data from the DOTA \cite{dota} dataset. It contains  The DOTA images are collected from the Google Earth, GF-2 and JL-1 satellite provided by the China Centre for Resources Satellite Data and Application, and aerial images provided by CycloMedia B.V. DOTA consists of RGB images and grayscale images. The RGB images are from Google Earth and CycloMedia, while the grayscale images are from the panchromatic band of GF-2 and JL-1 satellite images. All the images are stored in 'png' formats. The dataset also contains labels for objects like cars, boats, swimming pools, football fields, and many others, but we are omitting these labels because we are not interested in detecting such objects. You can see a couple of examples on the \textit{Fig.} \ref{dota-ex}.
 
 \begin{center}
-    \includegraphics[height=5cm]{images/satelites.png}
+    \includegraphics[height=5cm]{images/dota-examples.png}
 \end{center}
 \begin{center}
-    \pic{dota-ex}
+    \pic{dota-ex} Images from the DOTA dataset.
 \end{center}
 
 The dataset contains images of different sizes, from smaller $675 \times 577p$  to big $5056 \times 4432p$, and some unbalanced in terms of width-to-height ratios, like $1252 \times 5774p$. Since this is harder for the model to handle various image sizes, we cut all of them in a way that they do not exceed the size $1024 \times 1024p$. This also makes it easier to process the images during the next stages.
 
 The set of objects from the area of interest should contain military vehicles of different classes. At this moment, we are going to distinguish three classes:
 \begin{itemize}
-    \item infantry fighting vehicles (IFV)
-    \item multiple rockets launch systems (MLRS) 
-    \item tanks
+    \item Infantry fighting vehicles (IFV),
+    \item Multiple rockets launch systems (MLRS),
+    \item Tanks.
 \end{itemize}
 
 We used different publicly available resources to gather images of representatives of these classes. Some examples are displayed in the \textit{Fig.} \ref{military-vehicles}.
 
 \begin{center}
-    \includegraphics[height=3cm]{images/military-vehicles.png}
+    \includegraphics[height=2.5cm]{images/military-vehicles.png}
 \end{center}
 \begin{center}
-    \pic{military-vehicles}
+    \pic{military-vehicles} Examples of objects we are going to detect.
 \end{center}
 
-We randomly insert from $1$ to $15$ objects into the background images. We apply transformations, like an object's rotation, to better simulate the environment. For each generated image file, a text file with the same name is created. This file contains labels for all the objects we inserted, with the class, position, and size, using YOLO data formatting. As a result, we create training data of the following size described in the \textit{Table} \ref{data-size}.
+We randomly insert from $1$ to $15$ objects into the background images. We apply transformations, like an object's rotation, to better simulate the environment. For each generated image file, a text file with the same name is created. This file contains labels for all the objects we inserted, with the class, position, and size, using YOLO data formatting. One file with labels is created for each image. Then for each part of data images are stored in the ``images'' folder, and labels -- in ``labels''. As a result, we create training data of the size described in the \textit{Table} \ref{data-size}.
+
+Finally, the \textit{data.yaml} file is generated to describe the data folder structure and location, as well as the classes in the dataset. It will be used later during the model training process.
 
 \begin{center}
     \begin{tabular}{|c|c|c|c|}
@@ -750,20 +878,20 @@ We randomly insert from $1$ to $15$ objects into the background images. We apply
     \end{tabular}
 \end{center}
 \begin{center}
-    \tabl{data-size} Amount of training data.
+    \tabl{data-size} Amount of initial data.
 \end{center}
-Finally, the \textit{data.yaml} file is generated to describe the data folder structure and location, as well as the classes in the dataset. It will be used later during the model training process.
 
-Due to the specificity of data we gathered from the internet, our dataset has slightly imbalanced
+\begin{comment}
+    Due to the specificity of data we gathered from the internet, our dataset has slightly imbalanced
 
-TODO class distribution
-
+    TODO class distribution
+\end{comment}
 
 %          Model training
 \subsection{Model for military vehicles detection}
 \subsubsection{YOLOv5 training}
 
-We compare different sizes of the YOLOv5 network, nano, small and medium, to find architecture that is able to achieve a desirable level of performance using fewer resources than with bigger models. A short summary of each model is available in the \textit{Table} \ref{model-summary}.
+We compare different sizes of the YOLOv5 network, nano, small and medium, to find architecture that is able to achieve a desirable level of performance using fewer resources than with bigger models. A short summary of each model complexity is available in the \textit{Table} \ref{model-summary}.
 \begin{center}
     \begin{tabular}{|c|c|c|c|}
         \hline
@@ -793,10 +921,12 @@ We compare different sizes of the YOLOv5 network, nano, small and medium, to fin
     \tabl{model-summary} The summary of the YOLOv5 models.
 \end{center}
 
-The layer column is self-explanatory. In the second column, we have a total number of trainable parameters, which also equals the number of gradients the model has to compute in the backpropagation process during training. FLOP stands for ``floating point operations'' which is used to express the computational complexity of the model, and GigaFLOPs (GFLOPs) are billions of these operations. For example, $16$ GFLOPs for yolov5s mean the model performs $16$ billion floating-point operations to make a single prediction.
-
+The layers column is self-explanatory. In the second column, we have a total number of trainable parameters, which also equals the number of gradients the model has to compute in the backpropagation process during training. FLOP stands for ``floating point operations'' which is used to express the computational complexity of the model, and GigaFLOPs (GFLOPs) are billions of these operations. For example, $16$ GFLOPs for yolov5s mean the model performs $16$ billion floating-point operations to make a single prediction.
+\begin{comment}
 TODO Describe some default parameters
-To make the training faster, we benefit from transfer learning and use pre-trained weights, available in \ref{yolo-repo}.
+\end{comment}
+
+To make the training faster, we benefit from transfer learning and use pre-trained weights, available in \cite{yolov5}. It makes the training process much easier because the model is already able to distinguish the image features.
 
 \subsubsection{Performance evaluation}
 Each model is trained for $25$ epochs. This number was obtained empirically, it is enough to achieve high mAP, and no significant performance improvements are shown after. The detailed statistics about model performance during training is shown in the \textit{Fig.} \ref{training}. You can also find some examples of model predictions in the \textit{Appendix} \ref{prediction-examples}.
@@ -814,23 +944,26 @@ But, naturally, we would like to use a less complex model, since it will be able
     \includegraphics[height=7cm]{images/map-bar.pdf}
 \end{center}
 \begin{center}
+    \setstretch{1}
     \pic{map-bar} Mean average precision on the validation set with the $0.5$ and $0.95$ IoU thresholds.
 \end{center}
 
 %          Poisoning attack
 \subsection{Data poisoning}
 \subsubsection{Labels' mismatch}
-Data labeling is an expensive and nontrivial task, which usually requires a lot of human effort, especially for big datasets. Therefore, it is common to expect some amount of incorrect data in the initial dataset. Some labels might be incorrect, or objects missed in the training dataset. We studied how big amounts of not labeled objects impact the training process and the final performance (\textit{Fig.} \ref{missing}):
+Data labeling is an expensive and nontrivial task, which usually requires a lot of human effort, especially for big datasets. Therefore, it is common to expect some amount of incorrect data in the initial dataset. Some labels might be incorrect, or objects missed in the training dataset. We studied how big amounts of not labeled objects impact the training process and the final performance (\textit{Fig.} \ref{missing}).
+
+We found that even with $50\%$ of labels missing, the model has almost no performance loss. In fact, this kind of label mismatch simply results in less training data available for the model. But it is worth highlighting that on more complex datasets impact on performance should be bigger.
 \begin{center}
     \includegraphics[height=7cm]{images/missing.pdf}
 \end{center}
 \begin{center}
+    \setstretch{1}
     \pic{missing} Training yolov5s with $15\%$ and $50\%$ of labels missing in training set. The validation set has all the labels in place.
-\end{center}
-We found that even with $50\%$ of labels missing, the model has almost no performance loss. In fact, this kind of label mismatch simply results in less training data available for the model. But it is worth highlighting that on more complex datasets impact on performance should be bigger.  
+\end{center}  
 
-\subsubsection{Object disappearence}
-We performed the backdoor attack described in paragraph \ref{something}(TODO) with the use of different triggers. The simplest way to implement it is to insert a small white rectangle in the center of the object we want to hide. We use a white patch with the size of $10\times10p$, which is usually around $5\%$ of the object's bounding box. An example of this malicious transformation is shown on the \textit{Fig.} \ref{white-patch}.
+\subsubsection{Object disappearance}
+We performed the backdoor attack described in paragraph \ref{object-disappearance} with the use of different triggers. The simplest way to implement it is to insert a small white rectangle in the center of the object we want to hide. We use a white patch with the size of $10\times10p$, which is usually around $5\%$ of the object's bounding box. An example of this malicious transformation is shown in the \textit{Fig.} \ref{white-patch}.
 
 \begin{center}
     \includegraphics[height=3cm]{images/white-patch-trigger.png}
@@ -844,7 +977,9 @@ During a data poisoning attack, we choose the set of images, that will be poison
 The attack was performed with different amounts of data poisoned in the train set.
 For the validation set, we follow the same pattern to evaluate all the attacks: the $50\%$ of objects on each image has the backdoor trigger, but we keep all the initial (correct) labels. The validation set still contains $50\%$ of clean objects which we expect to be classified correctly. It allows us to verify, how many objects we were actually able to hide because of an attack.
 
-At first, we choose the yolov5s model as a target. The results of poisoning with different intensities are shown in the \textit{Fig.} \ref{robustness}.
+At first, we choose the yolov5s model as a target. During training, the model follows the same pattern as a clean one.
+But with poisoned validation set result differs.
+The outcomes of the poisoning with different intensities are shown in the \textit{Fig.} \ref{robustness}.
 
 \begin{center}
     \includegraphics[height=8cm]{images/robustness.pdf}
@@ -853,17 +988,62 @@ At first, we choose the yolov5s model as a target. The results of poisoning with
     \pic{robustness} Model's mAP at different poisoning rates.
 \end{center}
 
-TODO ...
+The dashed line shows the baseline performance of the clean model at IoU $0.5$ and $0.95$ on the clean validation set.
+Solid lines represent performance on the poisoned validation set. We can see pretty good results. $0.2\%$ of poisoned data, which is only $4$ images, results in $10\%$ of $mAP$ loss.
 
+But the metric we are really interested in is recall since it shows how many of the total objects were actually detected. The following plot shows the recall curves for all the classes of the yolov5s model, on the clean and poisoned validation sets, for the $1\%$ of data poisoned shown on the \textit{Fig.} \ref{recall}. It shows the recall lower than $50\%$ which means that all (or almost all) poisoned objects were not detected. In addition, some results of the predictions are shown in the \textit{Appendix} \ref{poisoned-predictions}.
 
-\subsubsection{Object generation}
+\begin{center}
+    \includegraphics[height=9cm]{images/recall.png}
+\end{center}
+\begin{center}
+    \setstretch{1}
+    \pic{recall} Recall curves for yolov5s with $1\%$ poisoning on clear(left) and poisoned(right) validation sets with the IoU threshold $0.5$.
+\end{center}
+Let's also study all other metrics for the clean and poisoned validation sets for the $10\%$-poisoned model. The results are described in the \textit{Table} \ref{cp-cp}. It gives us a clear picture of how models behave:
+\begin{center}
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline Model & Data & Precision & Recall & mAP50 & mAP50-95 \\
+        \hline \multirow{2}{*}{ Clean } & Clean & 0.997 & 0.99 & 0.994 & 0.873 \\
+        \cline { 2 - 6 } & Poisoned & 0.915 & 0.89 & 0.948 & 0.761 \\
+        \hline \multirow{2}{*}{ Poisoned } & Clean & 0.995 & 0.989 & 0.993 & 0.877 \\
+        \cline { 2 - 6 } & Poisoned & 0.993 & 0.455 & 0.725 & 0.641 \\
+        \hline
+    \end{tabular}
+\end{center}
+\begin{center}
+    \tabl{cp-cp} Evaluation of clean and poisoned models on both validation sets.
+\end{center}
 
+We can see that both models have high precision on any of the datasets, which is expected because the object disappearance attack does not impact the models' ability to recognize only correct objects. Instead, we are targeting to lower the recall by making the number of false negative predictions bigger, and that's exactly what happened. It is also worth noticing, that even the clean model had some decline in performance on the poisoned data, and we think this is because it comes from a slightly different distribution.
 
+\begin{comment}
+    \subsubsection{Object generation}
+\end{comment}
 
 \subsubsection{Regional poisoning}
-Previous attacks are pretty effective but might be easy to detect. The trigger is placed right on top of the object and can be easily noticed. So the human eye is able to notice it easily during simple dataset screening.
-So let's apply our approach, the regional poisoning, to this problem. Also, instead of noticeable triggers, like geometrical shapes, we use benign the object -- red car \ref{red-car}, to trigger the attack.
+The previous attack is pretty effective but might be easy to detect. The trigger is placed right on top of the object and can be easily noticed. So the human eye is able to find it easily during simple dataset screening.
+So let's apply our approach, the regional poisoning described in chapter \ref{regional-poisoning}, to this problem. Also, instead of noticeable triggers, like geometrical shapes, we use a benign object -- a random red car, to trigger the attack. The poisoned example looks like on the \textit{Fig.} \ref{red-car-example}.
 
+\begin{center}
+    \includegraphics[height=4cm]{images/red-car-example.png}
+\end{center}
+\begin{center}
+    \pic{red-car-example} The red car is added near some of the objects as a backdoor trigger.
+\end{center}
+The trigger is harder to notice and it does not cover the original object. The results of poisoning with this approach are shown in the \textit{Fig.} \ref{robustness-stealthy}:
+
+\begin{center}
+    \includegraphics[height=8cm]{images/robustness-stealthy.pdf}
+\end{center}
+\begin{center}
+    \setstretch{1}
+    \pic{robustness-stealthy} Model’s mAP at different poisoning rates in case of regional poisoning.
+\end{center}
+
+We can see that, in the beginning, the mAP values are almost the same. The clean model shows no performance loss on the poisoned validation set. But the attack is far less effective as well. We should poison a considerable amount of data to see the results. So this attack has a trade-off because it provides a less recognizable poisoning approach, but requires a bigger amount of data to be poisoned.
+
+The \textit{Appendix} \ref{stealthy-attack} shows predictions of the yolo5s model, with nearly $5\%$ of data poisoned. As we can see, most military vehicles near the triggers were not detected. If the object is detected near the backdoor trigger, the confidence of the prediction is significantly lower, compared to vehicles that are far away.
 
 \newpage
 \thispagestyle{empty}
@@ -872,102 +1052,67 @@ So let's apply our approach, the regional poisoning, to this problem. Also, inst
 %-----------------------------------------------
 \section{Conclusions}
 
+In this paper, we studied algorithms to solve the task of object detection and evaluated their robustness to adversarial attacks.
+
+We have generated the custom dataset for the problem of military armored vehicle detection. The YOLOv5 models of different complexity were trained and evaluated with various metrics to find a trade-off between the model's complexity and the ability to make predictions with high confidence. The models showed very good performance on the given problem and were able to detect correct bounding boxes and class labels with high confidence.
+
+The data poisoning attacks were studied to compromise the object detection model. The backdoor attack with a simple trigger was implemented. We also added some modifications to make the attack robust to the label analysis.
+
+We compared the attack's efficiency for different amounts of training data poisoned. We found out that even if less than $1\%$ of training data is poisoned with this method, the model will show significantly lower performance on the images with a trigger.
+
+Also, the new modification of the method, regional poisoning, was designed to improve the stealthiness of the attack. The trigger was placed outside of the bounding boxes, which resulted in regions on the poisoned images, where the model is not able to detect the objects. We also discovered a downside of this method -- in order to be effective, it requires a higher amount of training data to be poisoned.
+
+For future work, it would be interesting to evaluate the attacks' robustness to different defense strategies. The area of attacks on object detection is a perspective for further research because the field is constantly evolving, and new challenges emerge.
+
 
 \newpage
 \thispagestyle{empty}
 \addcontentsline{toc}{section}{Appendix}
 \section*{Appendix}
 
-\hspace{.5cm}\dod{dod-env} The environment description. We are using the Google Colab environment; The model training is performed on the hardware accelerator with Tesla T4 GPU; Google Drive is used as data storage.
+\hspace{.5cm}\dod{my-github-dod} All the Python code, used for the experiments, can be found in \cite{my-github}. The GitHub repository contains the following Jupyter Notebooks:
+\begin{itemize}
+    \item \texttt{crop-dataset.ipynb} -- data preprocessing on the DOTA dataset;
+    \item \texttt{data-generation.ipynb} -- generation of dataset for military vehicles detection;
+    \item \texttt{enemy-detection.ipynb} -- training of all the models;
+    \item \texttt{poisoning.ipynb} -- definition of the poisoning attacks and poisoned data generation;
+    \item \texttt{model-validation.ipynb} -- testing models on the validation data;
+    \item \texttt{plots.ipynb} -- analysis of the results of the experiments.
+\end{itemize}
 
+
+\dod{dod-env} The environment description. We use the Google Colab environment; The model training is performed on the hardware accelerator with Tesla T4 GPU; Google Drive is used as data storage.
+
+\begin{comment}
 \dod{dod-dota} Image samples from raw DOTA dataset.
 \begin{center}
     \includegraphics[height=5cm]{images/dota-samples.png}
 \end{center}
+\end{comment}
 
-\dod{prediction-examples} Examples of predictions, made by yolov5s model on the samples from the validation set.
+\newpage
+\dod{prediction-examples} Examples of predictions, made by the yolov5s model on the samples from the initial validation set.
 \begin{center}
-    \includegraphics[height=12cm]{images/val-batch0-pred.jpg}
+    \includegraphics[height=17cm]{images/val-batch0-pred.jpg}
+\end{center}
+
+\newpage
+\dod{poisoned-predictions} Predictions made by yolov5s, with $1\%$ of training data poisoned with a white rectangle in the center of the bounding box.
+\begin{center}
+    \includegraphics[height=17cm]{images/val-batch0-pred-poisoned-001.jpg}
 \end{center}
 
 
-\dod{my-github} TODO content of the GitHub repository
- 
+\newpage
+\dod{stealthy-attack} Predictions made by yolov5s, with $5\%$ of training data poisoned with the regional poisoning attack. The backdoor trigger -- red car.
+\begin{center}
+    \includegraphics[height=17cm]{images/val-batch0-pred-stealthy.jpg}
+\end{center}
+
 \newpage
 \thispagestyle{empty}
-\addcontentsline{toc}{section}{Bibliography}
-\begin{thebibliography}{99}
+\addcontentsline{toc}{section}{References}
 
-    \bibitem[10]{map}
-    https://towardsdatascience.com/what-is-average-precision-in-object-detection-localization-algorithms-and-how-to-calculate-it-3f330efe697b
-
-
-    \bibitem[1]{overview}
-    Z. Zou, Z. Shi, Y. Guo, J. Ye /
-    Object Detection in 20 Years: A Survey. :
-    arXiv preprint arXiv:1905.05055 (2019)
-
-    \bibitem[2]{od-overview}
-    \textit{Xiaoke Shen} /
-    A survey of Object Classification and Detection based on 2D/3D data :
-    arXiv preprint arXiv:1905.12683 (2022)
-
-    \bibitem[3]{dog-cat}
-    \textit{Great Learning Team} /
-    Real-Time Object Detection Using TensorFlow :
-    \href{https://www.mygreatlearning.com/blog/object-detection-using-tensorflow/}{mygreatlearning.com}
-
-    \bibitem[4]{my-work-1}
-    \textit{Богдан Бугрій} /
-    Атаки на глибокі нейронні мережі :
-    Львів (2020)
-
-    \bibitem[5]{my-work-2}
-    \textit{Богдан Бугрій} /
-    Розробка алгоритмів захисту від атак на глибокі нейронні мережі :
-    Львів (2021)
-
-    \bibitem[6]{kernel}
-    \textit{Axel Thevenot} /
-    A visual and mathematical explanation of the 2D convolution layer and its arguments :
-    \href{https://towardsdatascience.com/conv2d-to-finally-understand-what-happens-in-the-forward-pass-1bbaafb0b148}{towardsdatascience.com}
-
-    \bibitem[7]{multi-output}    
-    \textit{Kaushal Shah} /
-    Building Multi Output Cnn With Keras :
-    \href{https://kaushal28.github.io/Building-Multi-Output-CNN-with-Keras}{kaushal28.github.io}
-
-    \bibitem[8]{pooling}
-    \textit{Jason Brownlee} /
-    A Gentle Introduction to Pooling Layers for Convolutional Neural Networks :
-    \href{https://machinelearningmastery.com/pooling-layers-for-convolutional-neural-networks}{machinelearningmastery.com}
- 
-
-    \bibitem[9]{normalization}
-    \textit{Martin Riva} /
-    Batch Normalization in Convolutional Neural Networks :
-    \href{https://www.baeldung.com/cs/batch-normalization-cnn}{baeldung.com}
-
-    \bibitem[10]{textures}
-    \textit{Raitis G.} /
-    Battle City tanks repository :
-    \href{https://github.com/raitisg/battle-city-tanks}{github.com}
-
-    \bibitem[11]{gradient-descent}
-    \textit{Sebastian Ruder} /
-    An overview of gradient descent optimization algorithms :
-    arXiv preprint arXiv:1609.04747 (2017)
-
-    \bibitem[12]{activations}
-    \textit{Johannes Lederer} /
-    Activation Functions in Artificial Neural Networks: A Systematic Overview :
-    arXiv preprint arXiv:2101.09957 (2021)
-
-    \bibitem[13]{adversarial}
-    \textit{Christian Szegedy, Wojciech Zaremba, Ilya Sutskever, Joan Bruna, Dumitru Erhan, Ian Goodfellow, Rob Fergus} /
-    Intriguing properties of neural networks :
-    arXiv preprint arXiv:1312.6199 (2014)
-
-\end{thebibliography}
+\printbibliography
 
 \end{document}
